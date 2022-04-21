@@ -1,0 +1,33 @@
+Class EnsLib.File.PassthroughService.messagedecoupage Extends Ens.BusinessOperation
+{
+
+Property Adapter As EnsLib.EMail.OutboundAdapter;
+
+Method SendMailOUL(pRequest As Ens.StreamContainer, Output pResponse As Ens.Response) As %Status
+{
+
+  	set pInput = pRequest.Stream
+  	$$$LOGINFO("pInput :"_pInput)
+ 	 set stringStream = "" 
+  	
+		While 'pInput.AtEnd {
+		Set line=pInput.ReadLine()
+		$$$LOGINFO("coded line :"_line)
+		set stringStream=stringStream_line_"\\n"
+		
+	} 
+	$$$LOGINFO("StrinfStream :"_stringStream)
+	
+	Quit $$$OK
+}
+
+XData MessageMap
+{
+<MapItems>
+	<MapItem MessageType="Ens.StreamContainer"> 
+		<Method>SendMailOUL</Method>
+	</MapItem>
+</MapItems>
+}
+
+}

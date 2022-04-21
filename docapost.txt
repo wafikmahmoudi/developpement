@@ -1,0 +1,50 @@
+Class User.testwafik Extends Ens.BusinessService
+{
+
+Parameter ADAPTER = "Ens.InboundAdapter";
+
+Parameter SETTINGS = "TargetConfigNames,Query";
+
+Property TargetConfigNames As %String(MAXLEN = 1000);
+
+Method OnProcessInput(pInput As %RegisteredObject, Output pOutput As %RegisteredObject) As %Status
+{
+	try{
+		
+		   $$$LOGINFO("hello")
+		   
+		     set request=##class(%Net.HttpRequest).%New()
+		     do request.SetHeader("Authorization","Basic ZTU1ODAyNzVmNzcyNDY2YTg5NDkyNWJlNDc3YzM5NjY6TWpnMllXTXlZemt0WWpaa1pTMDBZVGhoTFdFeU1EQXRPVEpqWm1Vd1kyTXdaR0kw")
+			do request.SetHeader("Content-Type","application/x-www-form-urlencoded")
+		// Do request.InsertFormData("grant_type","client_credentials")
+		 do request.EntityBody.Write("grant_type=client_credentials")
+		
+		     set request.SSLConfiguration = "testwafik"
+		
+		
+             set status=request.Post("https://www.rec2.docapost.io/hub/v2/oauth/token/")
+             $$$LOGINFO("status"_status)
+   
+             Set Result = [].%FromJSON(request.HttpResponse.Data)
+             Set Token = Result.%ToJSON()
+    
+             set ^T("user","sjabeur") =Result.%ToJSON()
+            set xx = ^T("user","sjabeur")
+            $$$LOGINFO("test"_xx)
+    
+           	
+             
+             
+             
+              
+             
+	
+	
+	  Quit:$$$ISERR(status)
+       } Catch ex {
+                    Set status= ex.AsStatus()
+       }
+         Quit 1
+}
+
+}

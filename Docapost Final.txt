@@ -1,0 +1,219 @@
+Class User.Identite Extends Ens.BusinessOperation
+
+{
+
+Property Adapter As EnsLib.EMail.OutboundAdapter;
+
+Method DecoupageMessage(pRequest As Ens.StreamContainer, Output pResponse As Ens.Response) As %Status
+{ 
+		////////////////////////get token/////////////////////////////////////////////////////////////////////////
+		 $$$LOGINFO("hello")
+		   
+		     set request=##class(%Net.HttpRequest).%New()
+		     do request.SetHeader("Authorization","Basic ZTU1ODAyNzVmNzcyNDY2YTg5NDkyNWJlNDc3YzM5NjY6TWpnMllXTXlZemt0WWpaa1pTMDBZVGhoTFdFeU1EQXRPVEpqWm1Vd1kyTXdaR0kw")
+		     do request.SetHeader("Content-Type","application/x-www-form-urlencoded")
+		     do request.EntityBody.Write("grant_type=client_credentials")
+		     set request.SSLConfiguration = "testwafik"
+             set status=request.Post("https://www.rec2.docapost.io/hub/v2/oauth/token/")
+             $$$LOGINFO("status"_status)
+        
+             set jsonData = {}.%FromJSON(request.HttpResponse.Data)   
+           
+             //$$$LOGINFO("jsonData"_jsonData)	
+             Set Token = jsonData.%ToJSON()
+			 
+			 $$$LOGINFO(Token)
+	
+			    set iter = jsonData.%GetIterator()
+			    set x  = iter.%GetNext(.key , .tokenvalue ) 
+			    $$$LOGINFO(tokenvalue)
+			 
+
+
+			    	//////////////////flux identité////////////////////////////////////////////////////////////////////
+
+	$$$LOGINFO("Hello identite")
+
+  	set pInput = pRequest.Stream
+  	//$$$LOGINFO("pInput :"_pInput)
+ 	 set stringStream = "" 
+  	
+		While 'pInput.AtEnd {
+		Set line=pInput.ReadLine()
+		//$$$LOGINFO("coded line :"_line)
+		//set stringStream=stringStream_line_"\n"
+		set stringStream=stringStream_line
+		
+		} 
+		
+		
+		
+		SET urli = $ZCONVERT(stringStream,"I","JS")
+		SET stringStream = $ZCONVERT(urli,"I","UTF8")
+  
+  
+		$$$LOGINFO("StrinfStream :"_stringStream)
+		
+	
+	
+			set messageX ={}
+			set messageX.message =stringStream
+			//$$$LOGINFO("mess :"_messageX.%ToJSON())
+		
+             Set T = messageX
+			
+			
+			$$$LOGINFO(T.%ToJSON())
+			set message = T
+	
+			//set message = {"message": "MSH|^~\\&|MCK|MCK|EAI|EAI|20200228160137||ADT^A04^ADT_A01|218935|P|2.5^FRA^2.5|191888||||FRA|8859/1|||A03^IPG~ADD_ENTREE_HOPITAL^INTEG\nEVN||20200228155838|||LUDCAR\nPID|||412234^^^MCK&1.2.250.1.255.10.200.2&L^PI~1234567890^^^^PT||MARC^MICHEL^^^M^^L~MARC^MICHEL^^^M^^D||19551201|M|||87  RUE DES PYRENEES^^MARCK^^22730^FRA^H~^^^^^UNK^C~^^^^^UNK^BR||0675000102^PRN^PH~33757911877^PRN^CP^PRN^CP^^^^^^1^^^33757911877~^NET^Internet^patient.p1@yopmail.com|||U||900042096^^^MCK|||||33063|||FRA||||N||PROV\nPD1||||||||||||N\nPV1||O|2505|||||||557||||||N|||900042096^^^MCK&1.2.250.1.255.12.1.1&L^AN|C|07||||||||||||||||||||N|||20200228155800|20200228235900\nPV2|||||||AG\nZBE|EH_488847_1^MCK|20200228155800||INSERT|N||^^^^^^UF^^25051^2505|^^^^^^UF|M\nZFP| | \nZFV| \nZFM| \nIN1|1|623|||||||||||20200831|||PRUNIER^FRANCK|||||||||||||||||||||||||||||||||172046219321559"}
+			set request=##class(%Net.HttpRequest).%New()
+		    Set HttpResponse=##class(%Net.HttpResponse).%New()
+		    do request.SetHeader("Content-Type","application/json;charset=UTF-8")
+		    set token2 = "Bearer "_tokenvalue
+		    do request.SetHeader("Authorization",token2)
+			
+		     set request.SSLConfiguration = "testwafik"
+		     do request.EntityBody.Write(message.%ToJSON())
+             set status=request.Post("https://www.rec2.docapost.io/hub/v2/api/caih/patientIdentityInfo")
+             $$$LOGINFO("status"_status)
+             
+           
+            $$$LOGINFO("test" _request.HttpResponse.StatusCode)
+               Set Result = [].%FromJSON(request.HttpResponse.Data)
+             Set Token = Result.%ToJSON()
+    
+            $$$LOGINFO("Token"_Token)
+            
+	
+	
+	
+	
+	Quit $$$OK
+}
+
+XData MessageMap
+{
+<MapItems>
+	<MapItem MessageType="Ens.StreamContainer"> 
+		<Method>DecoupageMessage</Method>
+	</MapItem>
+</MapItems>
+}
+
+
+
+
+
+
+
+
+
+
+
+Class User.Identite Extends Ens.BusinessOperation
+{
+
+Property Adapter As EnsLib.EMail.OutboundAdapter;
+
+Method DecoupageMessage(pRequest As Ens.StreamContainer, Output pResponse As Ens.Response) As %Status
+{
+ 
+		////////////////////////get token/////////////////////////////////////////////////////////////////////////
+		 $$$LOGINFO("hello")
+		   
+		     set request=##class(%Net.HttpRequest).%New()
+		     do request.SetHeader("Authorization","Basic ZTU1ODAyNzVmNzcyNDY2YTg5NDkyNWJlNDc3YzM5NjY6TWpnMllXTXlZemt0WWpaa1pTMDBZVGhoTFdFeU1EQXRPVEpqWm1Vd1kyTXdaR0kw")
+		     do request.SetHeader("Content-Type","application/x-www-form-urlencoded")
+		     do request.EntityBody.Write("grant_type=client_credentials")
+		     set request.SSLConfiguration = "testwafik"
+             set status=request.Post("https://www.rec2.docapost.io/hub/v2/oauth/token/")
+             $$$LOGINFO("status"_status)
+        
+             set jsonData = {}.%FromJSON(request.HttpResponse.Data)   
+           
+             //$$$LOGINFO("jsonData"_jsonData)	
+             Set Token = jsonData.%ToJSON()
+			 
+			 $$$LOGINFO(Token)
+	
+			    set iter = jsonData.%GetIterator()
+			    set x  = iter.%GetNext(.key , .tokenvalue ) 
+			    $$$LOGINFO(tokenvalue)
+			 
+
+
+			    	//////////////////flux identité////////////////////////////////////////////////////////////////////
+
+	$$$LOGINFO("Hello identite")
+
+  	set pInput = pRequest.Stream
+  	//$$$LOGINFO("pInput :"_pInput)
+ 	 set stringStream = "" 
+  	
+		While 'pInput.AtEnd {
+		Set line=pInput.ReadLine()
+		//$$$LOGINFO("coded line :"_line)
+		//set stringStream=stringStream_line_"\n"
+		set stringStream=stringStream_line
+		
+		} 
+		
+		
+		
+		SET urli = $ZCONVERT(stringStream,"I","JS")
+		SET stringStream = $ZCONVERT(urli,"I","UTF8")
+  
+  
+		$$$LOGINFO("StrinfStream :"_stringStream)
+		
+	
+	
+			set messageX ={}
+			set messageX.message =stringStream
+			//$$$LOGINFO("mess :"_messageX.%ToJSON())
+		
+             Set T = messageX
+			
+			
+			$$$LOGINFO(T.%ToJSON())
+			set message = T
+	
+			//set message = {"message": "MSH|^~\\&|MCK|MCK|EAI|EAI|20200228160137||ADT^A04^ADT_A01|218935|P|2.5^FRA^2.5|191888||||FRA|8859/1|||A03^IPG~ADD_ENTREE_HOPITAL^INTEG\nEVN||20200228155838|||LUDCAR\nPID|||412234^^^MCK&1.2.250.1.255.10.200.2&L^PI~1234567890^^^^PT||MARC^MICHEL^^^M^^L~MARC^MICHEL^^^M^^D||19551201|M|||87  RUE DES PYRENEES^^MARCK^^22730^FRA^H~^^^^^UNK^C~^^^^^UNK^BR||0675000102^PRN^PH~33757911877^PRN^CP^PRN^CP^^^^^^1^^^33757911877~^NET^Internet^patient.p1@yopmail.com|||U||900042096^^^MCK|||||33063|||FRA||||N||PROV\nPD1||||||||||||N\nPV1||O|2505|||||||557||||||N|||900042096^^^MCK&1.2.250.1.255.12.1.1&L^AN|C|07||||||||||||||||||||N|||20200228155800|20200228235900\nPV2|||||||AG\nZBE|EH_488847_1^MCK|20200228155800||INSERT|N||^^^^^^UF^^25051^2505|^^^^^^UF|M\nZFP| | \nZFV| \nZFM| \nIN1|1|623|||||||||||20200831|||PRUNIER^FRANCK|||||||||||||||||||||||||||||||||172046219321559"}
+			set request=##class(%Net.HttpRequest).%New()
+		    Set HttpResponse=##class(%Net.HttpResponse).%New()
+		    do request.SetHeader("Content-Type","application/json;charset=UTF-8")
+		    set token2 = "Bearer "_tokenvalue
+		    do request.SetHeader("Authorization",token2)
+			
+		     set request.SSLConfiguration = "testwafik"
+		     do request.EntityBody.Write(message.%ToJSON())
+             set status=request.Post("https://www.rec2.docapost.io/hub/v2/api/caih/patientIdentityInfo")
+             $$$LOGINFO("status"_status)
+             
+           
+            $$$LOGINFO("test" _request.HttpResponse.StatusCode)
+               Set Result = [].%FromJSON(request.HttpResponse.Data)
+             Set Token = Result.%ToJSON()
+    
+            $$$LOGINFO("Token"_Token)
+            
+	
+	
+	
+	
+	Quit $$$OK
+}
+
+XData MessageMap
+{
+<MapItems>
+	<MapItem MessageType="Ens.StreamContainer"> 
+		<Method>DecoupageMessage</Method>
+	</MapItem>
+</MapItems>
+}
+
+}
+
+}
